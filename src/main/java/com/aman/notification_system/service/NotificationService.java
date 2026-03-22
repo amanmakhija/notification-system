@@ -1,21 +1,20 @@
 package com.aman.notification_system.service;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
+import com.aman.notification_system.dto.NotificationEvent;
+import com.aman.notification_system.dto.NotificationRequest;
+import com.aman.notification_system.exception.NotificationNotFoundException;
+import com.aman.notification_system.filter.CorrelationIdFilter;
+import com.aman.notification_system.model.Notification;
+import com.aman.notification_system.repository.NotificationRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.aman.notification_system.dto.NotificationEvent;
-import com.aman.notification_system.dto.NotificationRequest;
-import com.aman.notification_system.exception.NotificationNotFoundException;
-import com.aman.notification_system.model.Notification;
-import com.aman.notification_system.repository.NotificationRepository;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -29,8 +28,11 @@ public class NotificationService {
     public void sendNotification(NotificationRequest request) {
         rateLimiterService.checkRateLimit(request.getUserId());
 
+        String correlationId = MDC.get(CorrelationIdFilter.CORRELATION_ID_MDC_KEY);
+
         NotificationEvent event = NotificationEvent.builder()
                 .eventId(UUID.randomUUID().toString())
+                .correlationId(correlationId)
                 .userId(request.getUserId())
                 .message(request.getMessage())
                 .type(request.getType())
@@ -38,7 +40,8 @@ public class NotificationService {
                 .build();
 
         notificationProducer.sendNotification(event);
-        log.info("Notification event published for user: {}", request.getUserId());
+        log.info("Notification event published for user: {} correlationId: {}",
+                request.getUserId(), correlationId);
     }
 
     @Transactional(readOnly = true)
