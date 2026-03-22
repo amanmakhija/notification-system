@@ -7,6 +7,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -23,7 +25,8 @@ import lombok.Setter;
     name = "notifications",
     indexes = {
         @Index(name = "idx_user_id", columnList = "userId"),
-        @Index(name = "idx_created_at", columnList = "createdAt")
+        @Index(name = "idx_created_at", columnList = "createdAt"),
+        @Index(name = "idx_delivery_status", columnList = "deliveryStatus")
     }
 )
 @Getter
@@ -32,6 +35,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Notification {
+
+    public enum DeliveryStatus {
+        PENDING, SENT, DELIVERED, READ, FAILED
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,6 +59,11 @@ public class Notification {
 
     @Column(unique = true)
     private String eventId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Builder.Default
+    private DeliveryStatus deliveryStatus = DeliveryStatus.PENDING;
 
     @CreationTimestamp
     @Column(updatable = false)

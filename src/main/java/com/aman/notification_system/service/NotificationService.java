@@ -1,20 +1,23 @@
 package com.aman.notification_system.service;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+import org.slf4j.MDC;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.aman.notification_system.dto.NotificationEvent;
 import com.aman.notification_system.dto.NotificationRequest;
 import com.aman.notification_system.exception.NotificationNotFoundException;
 import com.aman.notification_system.filter.CorrelationIdFilter;
 import com.aman.notification_system.model.Notification;
 import com.aman.notification_system.repository.NotificationRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Slf4j
 @Service
@@ -66,6 +69,7 @@ public class NotificationService {
         Notification notification = notificationRepository.findById(notificationId)
                 .orElseThrow(() -> new NotificationNotFoundException(notificationId));
         notification.setRead(true);
+        notification.setDeliveryStatus(Notification.DeliveryStatus.READ);
         notificationRepository.save(notification);
     }
 }
