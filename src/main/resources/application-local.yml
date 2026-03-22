@@ -38,7 +38,7 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
-        spring.json.trusted.packages: "com.aman.notificationsystem.dto"
+        spring.json.trusted.packages: "com.aman.notification_system.dto"
         isolation.level: read_committed
     listener:
       ack-mode: manual
