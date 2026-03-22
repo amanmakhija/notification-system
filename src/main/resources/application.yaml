@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: notification-system
+  profiles:
+    active: local
+
+server:
+  port: 8080
+
+logging:
+  level:
+    com.aman: DEBUG
+    org.springframework.kafka: INFO
+    org.springframework.web: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
